@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using SeatBookingSimulator.Classes;
+using System;
 using System.Drawing;
-using System.Text;
+using System.Linq;
 using System.Windows.Forms;
-using SeatBookingSimulator.Classes;
-using System.Diagnostics;
 
 
 namespace SeatBookingSimulator
@@ -16,9 +12,72 @@ namespace SeatBookingSimulator
 
         SeatManager _seatManager = new SeatManager();
         DoubleLinkedList _doubleLinkedList = new DoubleLinkedList();
+
+        int _user = 0;
+
         public Form_normalMode()
         {
             InitializeComponent();
+        }
+
+        private void DrawLabel(int x, int y)
+        {
+            int labelsize = 45;
+
+            int[] rowaisle = { 2, 6 };
+            int[] columnaisle = { 4, 10 };
+
+            int columnname = 1;
+
+            // loop through each column (1,2,3...)
+            for (int i = 0; i < x; i++)
+            {
+                if (!columnaisle.Contains(i))
+                {
+                    char rowname = 'A';
+
+                    // loop through each row (a,b,c,d...)
+                    for (int j = 0; j < y; j++)
+                    {
+                        if (!rowaisle.Contains(j))
+                        {
+
+                            var labelname = rowname + columnname.ToString();
+
+                            var xpos = (j * (labelsize + 15)) + 100;
+                            var ypos = (i * (labelsize + 15)) + 200;
+
+                            var labelSeat = new Label
+                            {
+                                Text = labelname,
+                                Width = labelsize,
+                                Height = labelsize,
+                                Top = xpos,
+                                Left = ypos,
+                                BorderStyle = BorderStyle.FixedSingle,
+                                BackColor = Color.LightGray
+                            };
+
+                            panelSeats.Controls.Add(labelSeat);
+
+                            rowname++;
+                        }
+                    }
+                    columnname++;
+                }
+            }
+        }
+
+        private void label_Click(object sender, EventArgs e)
+        {
+            if (_user != 0)
+            {
+                var selectedSeat = (Seat)((Label)sender).Tag;
+            }
+            else
+            {
+                // tell user to select person to book for first
+            }
         }
 
         private void ResetFormState()
@@ -119,13 +178,13 @@ namespace SeatBookingSimulator
                 if (seat.BookStatus == false)
                 {
                     labelSeat.BackColor = Color.LightGray;
-                    
+
                 }
 
                 else
                 {
                     labelSeat.BackColor = Color.Yellow;
-                    
+
                 }
 
             }
@@ -155,8 +214,9 @@ namespace SeatBookingSimulator
         private void Form_normalMode_Load(object sender, EventArgs e)
         {
             MessageBox.Show("Normal Mode Loaded");
-            ResetFormState();
-            _doubleLinkedList.DisplayListOfSeats();
+            DrawLabel(15, 8);
+            //ResetFormState();
+            //_doubleLinkedList.DisplayListOfSeats();
 
         }
 
