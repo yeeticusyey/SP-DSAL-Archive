@@ -8,9 +8,16 @@ namespace SeatBookingSimulator.Classes
     class DoubleLinkedList
     {
         public Node start { get; set; }
+        public Seat seat;
+        public DoubleLinkedList doubleLinkedList;
         public DoubleLinkedList()
         {
             start = null;
+        }
+
+        public DoubleLinkedList GetDoubleLinkedList()
+        {
+            return this.doubleLinkedList;
         }
         public void DisplayListOfSeats()
         {
@@ -30,11 +37,8 @@ namespace SeatBookingSimulator.Classes
                 {
                     Console.WriteLine("{0}", p.Seat);
                     p = p.Next;
- 
                 }
             }
-
-
         }
         public void InsertAtBeginning(Seat seatData)
         {

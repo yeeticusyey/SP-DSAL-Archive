@@ -30,7 +30,7 @@ namespace SeatBookingSimulator
         private void InitializeComponent()
         {
             this.buttonLoad = new System.Windows.Forms.Button();
-            this.buttonSave = new System.Windows.Forms.Button();
+            this.buttonSaveToFile = new System.Windows.Forms.Button();
             this.buttonPersonA = new System.Windows.Forms.Button();
             this.buttonPersonB = new System.Windows.Forms.Button();
             this.buttonPersonC = new System.Windows.Forms.Button();
@@ -39,12 +39,15 @@ namespace SeatBookingSimulator
             this.labelScreen = new System.Windows.Forms.Label();
             this.panelSeats = new System.Windows.Forms.Panel();
             this.richTextBoxMessage = new System.Windows.Forms.RichTextBox();
+            this.buttonShowLog = new System.Windows.Forms.Button();
+            this.labelBookingSimulation = new System.Windows.Forms.Label();
+            this.labelRichTextboxActions = new System.Windows.Forms.Label();
             this.panelSeats.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonLoad
             // 
-            this.buttonLoad.Location = new System.Drawing.Point(12, 12);
+            this.buttonLoad.Location = new System.Drawing.Point(7, 12);
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(75, 23);
             this.buttonLoad.TabIndex = 1;
@@ -52,19 +55,19 @@ namespace SeatBookingSimulator
             this.buttonLoad.UseVisualStyleBackColor = true;
             this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
             // 
-            // buttonSave
+            // buttonSaveToFile
             // 
-            this.buttonSave.Location = new System.Drawing.Point(98, 12);
-            this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(75, 23);
-            this.buttonSave.TabIndex = 2;
-            this.buttonSave.Text = "Save";
-            this.buttonSave.UseVisualStyleBackColor = true;
-            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            this.buttonSaveToFile.Location = new System.Drawing.Point(93, 12);
+            this.buttonSaveToFile.Name = "buttonSaveToFile";
+            this.buttonSaveToFile.Size = new System.Drawing.Size(75, 23);
+            this.buttonSaveToFile.TabIndex = 2;
+            this.buttonSaveToFile.Text = "Save";
+            this.buttonSaveToFile.UseVisualStyleBackColor = true;
+            this.buttonSaveToFile.Click += new System.EventHandler(this.buttonSaveToFile_Click);
             // 
             // buttonPersonA
             // 
-            this.buttonPersonA.Location = new System.Drawing.Point(11, 223);
+            this.buttonPersonA.Location = new System.Drawing.Point(7, 150);
             this.buttonPersonA.Name = "buttonPersonA";
             this.buttonPersonA.Size = new System.Drawing.Size(161, 23);
             this.buttonPersonA.TabIndex = 9;
@@ -74,7 +77,7 @@ namespace SeatBookingSimulator
             // 
             // buttonPersonB
             // 
-            this.buttonPersonB.Location = new System.Drawing.Point(11, 253);
+            this.buttonPersonB.Location = new System.Drawing.Point(7, 180);
             this.buttonPersonB.Name = "buttonPersonB";
             this.buttonPersonB.Size = new System.Drawing.Size(161, 23);
             this.buttonPersonB.TabIndex = 10;
@@ -84,7 +87,7 @@ namespace SeatBookingSimulator
             // 
             // buttonPersonC
             // 
-            this.buttonPersonC.Location = new System.Drawing.Point(11, 283);
+            this.buttonPersonC.Location = new System.Drawing.Point(7, 210);
             this.buttonPersonC.Name = "buttonPersonC";
             this.buttonPersonC.Size = new System.Drawing.Size(161, 23);
             this.buttonPersonC.TabIndex = 11;
@@ -94,7 +97,7 @@ namespace SeatBookingSimulator
             // 
             // buttonPersonD
             // 
-            this.buttonPersonD.Location = new System.Drawing.Point(11, 313);
+            this.buttonPersonD.Location = new System.Drawing.Point(7, 240);
             this.buttonPersonD.Name = "buttonPersonD";
             this.buttonPersonD.Size = new System.Drawing.Size(161, 23);
             this.buttonPersonD.TabIndex = 12;
@@ -104,7 +107,7 @@ namespace SeatBookingSimulator
             // 
             // buttonReset
             // 
-            this.buttonReset.Location = new System.Drawing.Point(11, 369);
+            this.buttonReset.Location = new System.Drawing.Point(8, 315);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(161, 23);
             this.buttonReset.TabIndex = 13;
@@ -129,25 +132,56 @@ namespace SeatBookingSimulator
             this.panelSeats.BackColor = System.Drawing.SystemColors.Control;
             this.panelSeats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelSeats.Controls.Add(this.labelScreen);
-            this.panelSeats.Location = new System.Drawing.Point(179, 12);
+            this.panelSeats.Location = new System.Drawing.Point(174, 12);
             this.panelSeats.Name = "panelSeats";
-            this.panelSeats.Size = new System.Drawing.Size(1211, 626);
+            this.panelSeats.Size = new System.Drawing.Size(1216, 626);
             this.panelSeats.TabIndex = 16;
             // 
             // richTextBoxMessage
             // 
-            this.richTextBoxMessage.Location = new System.Drawing.Point(2, 398);
+            this.richTextBoxMessage.Location = new System.Drawing.Point(7, 398);
             this.richTextBoxMessage.Name = "richTextBoxMessage";
-            this.richTextBoxMessage.Size = new System.Drawing.Size(171, 240);
+            this.richTextBoxMessage.Size = new System.Drawing.Size(161, 240);
             this.richTextBoxMessage.TabIndex = 17;
             this.richTextBoxMessage.Text = "";
+            // 
+            // buttonShowLog
+            // 
+            this.buttonShowLog.Location = new System.Drawing.Point(8, 41);
+            this.buttonShowLog.Name = "buttonShowLog";
+            this.buttonShowLog.Size = new System.Drawing.Size(160, 23);
+            this.buttonShowLog.TabIndex = 18;
+            this.buttonShowLog.Text = "Show Booking Logs";
+            this.buttonShowLog.UseVisualStyleBackColor = true;
+            this.buttonShowLog.Click += new System.EventHandler(this.buttonShowLog_Click);
+            // 
+            // labelBookingSimulation
+            // 
+            this.labelBookingSimulation.AutoSize = true;
+            this.labelBookingSimulation.Location = new System.Drawing.Point(8, 132);
+            this.labelBookingSimulation.Name = "labelBookingSimulation";
+            this.labelBookingSimulation.Size = new System.Drawing.Size(111, 15);
+            this.labelBookingSimulation.TabIndex = 19;
+            this.labelBookingSimulation.Text = "Booking Simulation";
+            // 
+            // labelRichTextboxActions
+            // 
+            this.labelRichTextboxActions.AutoSize = true;
+            this.labelRichTextboxActions.Location = new System.Drawing.Point(8, 380);
+            this.labelRichTextboxActions.Name = "labelRichTextboxActions";
+            this.labelRichTextboxActions.Size = new System.Drawing.Size(91, 15);
+            this.labelRichTextboxActions.TabIndex = 20;
+            this.labelRichTextboxActions.Text = "Console Output";
             // 
             // Form_normalMode
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1402, 650);
+            this.ClientSize = new System.Drawing.Size(1398, 648);
+            this.Controls.Add(this.labelRichTextboxActions);
+            this.Controls.Add(this.labelBookingSimulation);
+            this.Controls.Add(this.buttonShowLog);
             this.Controls.Add(this.richTextBoxMessage);
             this.Controls.Add(this.panelSeats);
             this.Controls.Add(this.buttonReset);
@@ -155,7 +189,7 @@ namespace SeatBookingSimulator
             this.Controls.Add(this.buttonPersonC);
             this.Controls.Add(this.buttonPersonB);
             this.Controls.Add(this.buttonPersonA);
-            this.Controls.Add(this.buttonSave);
+            this.Controls.Add(this.buttonSaveToFile);
             this.Controls.Add(this.buttonLoad);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form_normalMode";
@@ -163,12 +197,13 @@ namespace SeatBookingSimulator
             this.Load += new System.EventHandler(this.Form_normalMode_Load);
             this.panelSeats.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.Button buttonLoad;
-        private System.Windows.Forms.Button buttonSave;
+        private System.Windows.Forms.Button buttonSaveToFile;
         private System.Windows.Forms.Button buttonPersonA;
         private System.Windows.Forms.Button buttonPersonB;
         private System.Windows.Forms.Button buttonPersonC;
@@ -177,5 +212,8 @@ namespace SeatBookingSimulator
         private System.Windows.Forms.Label labelScreen;
         private System.Windows.Forms.Panel panelSeats;
         private System.Windows.Forms.RichTextBox richTextBoxMessage;
+        private System.Windows.Forms.Button buttonShowLog;
+        private System.Windows.Forms.Label labelBookingSimulation;
+        private System.Windows.Forms.Label labelRichTextboxActions;
     }
 }

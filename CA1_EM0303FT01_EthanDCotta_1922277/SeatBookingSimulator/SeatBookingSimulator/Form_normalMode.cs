@@ -1,8 +1,16 @@
-﻿using SeatBookingSimulator.Classes;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.Linq;
+using System.Text;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using System.Linq;
+using SeatBookingSimulator.Classes;
+using System.Diagnostics;
 
 
 namespace SeatBookingSimulator
@@ -13,20 +21,31 @@ namespace SeatBookingSimulator
         SeatManager _seatManager = new SeatManager();
         DoubleLinkedList _doubleLinkedList = new DoubleLinkedList();
 
-        int _user = 0;
-
+        int NumOfRows = 6;
+        int NumOfcolumns = 12;
+        int x, y = 0;
         public Form_normalMode()
         {
             InitializeComponent();
+        }
+        private void ResetFormState()
+        {
+            //DrawLabel(8, 12);
+            DrawLabel2(NumOfRows, NumOfcolumns);
+
+            richTextBoxMessage.Text = "";
+            panelSeats.Controls.Add(labelScreen);
+            buttonPersonA.Enabled = true;
+            buttonPersonB.Enabled = true;
+            buttonPersonC.Enabled = true;
+            buttonPersonD.Enabled = true;
         }
 
         private void DrawLabel(int x, int y)
         {
             int labelsize = 45;
-
             int[] rowaisle = { 2, 6 };
             int[] columnaisle = { 4, 10 };
-
             int columnname = 1;
 
             // loop through each column (1,2,3...)
@@ -63,37 +82,23 @@ namespace SeatBookingSimulator
                             rowname++;
                         }
                     }
+
                     columnname++;
                 }
             }
         }
 
-        private void label_Click(object sender, EventArgs e)
+        private void DrawLabel2(int maxRow, int maxColumn) 
         {
-            if (_user != 0)
-            {
-                var selectedSeat = (Seat)((Label)sender).Tag;
-            }
-            else
-            {
-                // tell user to select person to book for first
-            }
-        }
-
-        private void ResetFormState()
-        {
-            int maxRow = 6;
-            int maxColumn = 12;
             int seatWidth = 45;
             int seatHeight = 45;
-            int x, y = 0;
 
-            for (x = 1; x <= maxColumn; x++)
+            for (y = 1; y <= maxRow; y++)
             {
-                for (y = 1; y <= maxRow; y++)
+                for (x = 1; x <= maxColumn; x++)
                 {
-                    _seatManager.GenerateSeats(x, y);
-                    Seat seat = _seatManager.DisplaySeats(x, y);
+                    _seatManager.GenerateSeats(y, x);
+                    Seat seat = _seatManager.GetSeat(y, x);
                     Label labelSeat = seat.SeatLabel;
 
                     if (y > 2)
@@ -129,26 +134,18 @@ namespace SeatBookingSimulator
                     labelSeat.Width = seatWidth;
                     labelSeat.Height = seatHeight;
                     labelSeat.BorderStyle = BorderStyle.FixedSingle;
-                    labelSeat.BackColor = Color.LightGray;
+                    labelSeat.BackColor = Color.White;
                     labelSeat.Name = "labelSeat_" + y.ToString() + "_" + x.ToString();
 
+                    //seat = _seatManager.InsertOneSeat(y, x);
                     labelSeat.Click += new EventHandler(HandleLabelClick);
-                    seat = _seatManager.InsertOneSeat(x, y);
-
                     labelSeat.Tag = seat;
                     labelSeat.Text = seat.ComputeSeatLabel();
 
                     panelSeats.Controls.Add(labelSeat);
-                    panelSeats.Controls.Add(labelScreen);
-
-                    buttonPersonA.Enabled = true;
-                    buttonPersonB.Enabled = true;
-                    buttonPersonC.Enabled = true;
-                    buttonPersonD.Enabled = true;
                 }
             }
         }
-
         private void HandleLabelClick(object sender, EventArgs e)
         {
             string labelName = "";
@@ -163,7 +160,7 @@ namespace SeatBookingSimulator
             else
             {
 
-                if (seat.BookStatus == false)
+                if (seat.BookStatus == false && seat.CanBook == true)
                 {
                     seat = _seatManager.FindOneSeatToBook(seat.Row, seat.SeatNumber);
                     richTextBoxMessage.Text = String.Format("Selected Seat {0}\n", labelSeat.Text);
@@ -175,54 +172,48 @@ namespace SeatBookingSimulator
                     richTextBoxMessage.Text = String.Format("Unselected Seat {0}\n", labelSeat.Text);
                 }
 
-                if (seat.BookStatus == false)
+                if (seat.BookStatus == false && seat.CanBook == true)
                 {
-                    labelSeat.BackColor = Color.LightGray;
-
+                    labelSeat.BackColor = Color.White;
+                    
                 }
 
                 else
                 {
                     labelSeat.BackColor = Color.Yellow;
-
+                    
                 }
-
             }
         }
-
-        private void buttonReset_Click(object sender, EventArgs e)
-        {
-            panelSeats.Controls.Clear();
-
-            int maxRow = 6;
-            int maxColumn = 12;
-            int x, y = 0;
-
-            for (x = 1; x <= maxColumn; x++)
-            {
-                for (y = 1; y <= maxRow; y++)
-                {
-                    _seatManager.RegenerateSeats(x, y);
-                }
-
-            }
-
-            ResetFormState();
-            richTextBoxMessage.Text = String.Format("Resetting Simualtion\n");
-        }
-
         private void Form_normalMode_Load(object sender, EventArgs e)
         {
             MessageBox.Show("Normal Mode Loaded");
-            DrawLabel(15, 8);
-            //ResetFormState();
+            ResetFormState();
+            buttonSaveToFile.Click += new EventHandler(buttonSaveToFile_Click);
+            //LoadData();
             //_doubleLinkedList.DisplayListOfSeats();
 
         }
-
         private void buttonPersonA_Click(object sender, EventArgs e)
         {
-            richTextBoxMessage.Text = String.Format("Person A Booking\n");
+            richTextBoxMessage.Text = "";
+
+            for (y = 1; y <= NumOfRows; y++)
+            {
+                for (x = 1; x <= NumOfcolumns; x++)
+                {
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    if (seat.BookStatus == true && seat.CanBook == false && seat.PersonBooking == "")
+                    {
+                        _seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person A");
+                        seat.SeatLabel.BackColor = Color.Red;
+                        labelSeat.Click -= new EventHandler(HandleLabelClick);
+                        richTextBoxMessage.Text += String.Format("Person A Booking Seat:  {0}\n", labelSeat.Text);
+                    }
+                }
+            }
 
             if (buttonPersonB.Enabled == true || buttonPersonC.Enabled == true || buttonPersonD.Enabled == true)
             {
@@ -233,14 +224,30 @@ namespace SeatBookingSimulator
             {
                 buttonPersonA.Enabled = false;
             }
-
-            //_seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "person A");
         }
 
         private void buttonPersonB_Click(object sender, EventArgs e)
         {
+            richTextBoxMessage.Text = "";
 
-            richTextBoxMessage.Text = String.Format("Person B Booking\n");
+            for (x = 1; x <= NumOfcolumns; x++)
+            {
+                for (y = 1; y <= NumOfRows; y++)
+                {
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    if (seat.BookStatus == true && seat.CanBook == false && seat.PersonBooking == "")
+                    {
+                        _seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person B");
+                        seat.SeatLabel.BackColor = Color.Red;
+                        labelSeat.Click -= new EventHandler(HandleLabelClick);
+                        richTextBoxMessage.Text += String.Format("Person B Booking Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                }
+
+            }
 
             if (buttonPersonA.Enabled == true || buttonPersonC.Enabled == true || buttonPersonD.Enabled == true)
             {
@@ -250,15 +257,30 @@ namespace SeatBookingSimulator
             {
                 buttonPersonB.Enabled = false;
             }
-
-            //_seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person B");
-
         }
 
         private void buttonPersonC_Click(object sender, EventArgs e)
         {
+            richTextBoxMessage.Text = "";
 
-            richTextBoxMessage.Text = String.Format("Person C Booking\n");
+            for (x = 1; x <= NumOfcolumns; x++)
+            {
+                for (y = 1; y <= NumOfRows; y++)
+                {
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    if (seat.BookStatus == true && seat.CanBook == false && seat.PersonBooking == "")
+                    {
+                        _seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person C");
+                        seat.SeatLabel.BackColor = Color.Red;
+                        labelSeat.Click -= new EventHandler(HandleLabelClick);
+                        richTextBoxMessage.Text += String.Format("Person C Booking Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                }
+
+            }
 
             if (buttonPersonA.Enabled == true || buttonPersonB.Enabled == true || buttonPersonD.Enabled == true)
             {
@@ -269,14 +291,31 @@ namespace SeatBookingSimulator
             {
                 buttonPersonC.Enabled = false;
             }
-
-            //_seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person C");
         }
 
         private void buttonPersonD_Click(object sender, EventArgs e)
         {
+            richTextBoxMessage.Text = "";
 
-            richTextBoxMessage.Text = String.Format("Person D Booking\n");
+            for (x = 1; x <= NumOfcolumns; x++)
+            {
+                for (y = 1; y <= NumOfRows; y++)
+                {
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    if (seat.BookStatus == true && seat.CanBook == false && seat.PersonBooking == "")
+                    {
+                        _seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person D");
+                        seat.SeatLabel.BackColor = Color.Red;
+                        labelSeat.Click -= new EventHandler(HandleLabelClick);
+                        richTextBoxMessage.Text += String.Format("Person D Booking Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                }
+
+            }
+
             if (buttonPersonA.Enabled == true || buttonPersonB.Enabled == true || buttonPersonC.Enabled == true)
             {
                 buttonPersonD.Enabled = false;
@@ -286,21 +325,100 @@ namespace SeatBookingSimulator
             {
                 buttonPersonD.Enabled = false;
             }
-
-            //_seatManager.PersonBookingSeats(seat.Row, seat.SeatNumber, "Person D");
-
-
         }
 
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            panelSeats.Controls.Clear();
+
+            int maxRow = 6;
+            int maxColumn = 12;
+
+            for (y = 1; y <= maxRow; y++)
+            {
+                for (x = 1; x <= maxColumn; x++)
+                {
+                    _seatManager.DeleteSeats(y, x);
+                }
+
+            }
+
+            ResetFormState();
+            richTextBoxMessage.Text = String.Format("Resetting Simulation\n");
+        }
         private void buttonLoad_Click(object sender, EventArgs e)
         {
+/*            ListViewItem lvi;
+            this.toDoList.ReadFromFile();
+            List<ToDo> toDoListData = toDoList.GetToDoList();
 
+            foreach (var toDoItem in toDoListData)
+            {
+                lvi = new ListViewItem(toDoItem.Title);
+                lvi.SubItems.Add(toDoItem.PriorityLevel.ToString());
+                lvi.SubItems.Add(toDoItem.Status.ToString());
+                lvi.Tag = toDoItem;
+
+                listviewToDoList.Items.Add(lvi);
+            }*/
         }
-
-        private void buttonSave_Click(object sender, EventArgs e)
+        private void buttonSaveToFile_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("Saved");
+            this._seatManager.SaveToFile();
+            ResetFormState();
         }
 
+        private void LoadData()
+        {
+            
+
+            for (x = 1; x <= NumOfcolumns; x++)
+            {
+                for (y = 1; y <= NumOfRows; y++)
+                {
+                    
+                    this._seatManager.ReadFromFile();
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    panelSeats.Controls.Add(labelSeat);
+                }
+            }
+        }
+
+        private void buttonShowLog_Click(object sender, EventArgs e)
+        {
+            richTextBoxMessage.Text = "";
+
+            for (y = 1; y <= NumOfRows; y++)
+            {
+                for (x = 1; x <= NumOfcolumns; x++)
+                {
+                    Seat seat = _seatManager.GetSeat(y, x);
+                    Label labelSeat = seat.SeatLabel;
+
+                    if (seat.PersonBooking == "Person A")
+                    {
+                        richTextBoxMessage.Text += String.Format("Person A has booked Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                    if (seat.PersonBooking == "Person B")
+                    {
+                        richTextBoxMessage.Text += String.Format("Person B has booked Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                    if (seat.PersonBooking == "Person C")
+                    {
+                        richTextBoxMessage.Text += String.Format("Person C has booked Seat:  {0}\n", labelSeat.Text);
+                    }
+
+                    if (seat.PersonBooking == "Person D")
+                    {
+                        richTextBoxMessage.Text += String.Format("Person D has booked Seat:  {0}\n", labelSeat.Text);
+                    }
+                }
+            }
+        }
     }
 }

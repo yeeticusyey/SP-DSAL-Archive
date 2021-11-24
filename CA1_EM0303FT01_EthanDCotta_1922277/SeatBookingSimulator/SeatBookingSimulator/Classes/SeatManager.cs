@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 using SeatBookingSimulator.Classes;
 
 namespace SeatBookingSimulator.Classes
@@ -40,10 +44,10 @@ namespace SeatBookingSimulator.Classes
             return seat;
         }// End of FindOneSeatToUnbook
 
-        public Seat DisplaySeats(int row, int column)
+        public Seat GetSeat(int row, int column)
         {
             Seat seat = _seats.SearchByRowAndColumn(row, column);
-            seat.SeatLabel.Text = "Seat" + row + column;
+            //seat.SeatLabel.Text = "Seat " + row + column;
             return seat;
         }
 
@@ -66,7 +70,7 @@ namespace SeatBookingSimulator.Classes
                 }
             }
         }
-        public void RegenerateSeats(int row, int column)
+        public void DeleteSeats(int row, int column)
         {
 
             int x, y = 0;
@@ -81,10 +85,10 @@ namespace SeatBookingSimulator.Classes
             }
         }
 
-        /*public Seat GetSeats()
+/*        public Seat GetSeats()
         {
-            //Seat seat = ;
-            //return seat;
+            Seat seat = _seats.SearchByRowAndColumn();
+            return seat;
         }*/
 
         public void PersonBookingSeats(int row, int column, string person)
@@ -94,6 +98,29 @@ namespace SeatBookingSimulator.Classes
             {
                 seat.PersonBooking = person;
             }
+        }
+
+        public void SaveToFile()
+        {
+            string filepath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\data.txt";
+            BinaryFormatter f = new BinaryFormatter();
+            Stream stream = new FileStream(@filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            f.Serialize(stream, _seats);
+            stream.Close();
+        }
+
+        public void ReadFromFile()
+        {
+            string filepath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\data.txt";
+            Stream stream = new FileStream(@filepath, FileMode.OpenOrCreate, FileAccess.Read);
+            BinaryFormatter f = new BinaryFormatter();
+
+            if (stream.Length != 0)
+            {
+                _seats = (DoubleLinkedList)f.Deserialize(stream);
+            }
+
+            stream.Close();
         }
 
     }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using SeatBookingSimulator.Classes;
 
 namespace SeatBookingSimulator.Classes
 {
+    [Serializable]
     class Seat
     {
 
@@ -66,13 +68,13 @@ namespace SeatBookingSimulator.Classes
                 if (value == true && _bookStatus == false)
                 {
                     _bookStatus = value;
-                    //_seatlabel.BackColor = Color.LightGray;
+                    _seatlabel.BackColor = Color.LightGray;
                 }
 
                 if (value == false && _bookStatus == true)
                 {
                     _bookStatus = value;
-                    //_seatlabel.BackColor = Color.Red;
+                    _seatlabel.BackColor = Color.Red;
                 }
             }
         }
